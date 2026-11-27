@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
 
 @Entity
 @Getter
@@ -17,9 +18,9 @@ import lombok.Setter;
 @Table(name = "Produtos")
 public class Produto {
 
-    @id
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Integer Id;
     private String name;
     private Long price;
 }
