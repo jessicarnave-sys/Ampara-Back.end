@@ -1,47 +1,52 @@
 package br.com.ampara.Pessoa;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/Pessoa")
+@RequestMapping("/pessoas")
 public class PessoaController {
 
-        @Autowired
-        private PessoaRepository pessoaRepository;
+    private final PessoaService pessoaService;
 
+    public PessoaController(PessoaService pessoaService) {
+        this.pessoaService = pessoaService;
+    }
 
-        @GetMapping
-        public List<Pessoa> listar() {
-            return pessoaRepository.findAll();
-        }
+    @GetMapping
+    public ResponseEntity<List<PessoaResponse>> listar() {
+        List<PessoaResponse> pessoas = pessoaService.listarPessoas()
+                .stream()
+                .map(PessoaResponse::new)
+                .toList();
+        return ResponseEntity.ok(pessoas);
+    }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<PessoaResponse> buscarPorId(@PathVariable Long id) {
+        Pessoa pessoa = pessoaService.buscarPessoaPorId(id);
+        return ResponseEntity.ok(new PessoaResponse(pessoa));
+    }
 
-        @GetMapping("/{id}")
-        public Optional<Pessoa> buscarPorId(@PathVariable Long id) {
-            return pessoaRepository.findById(id);
-        }
+    @PostMapping
+    public ResponseEntity<PessoaResponse> cadastrar(@RequestBody Pessoa pessoa) {
+        Pessoa salva = pessoaService.cadastrarPessoa(pessoa);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new PessoaResponse(salva));
+    }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<PessoaResponse> atualizar(@PathVariable Long id,
+                                                    @RequestBody Pessoa pessoa) {
+        Pessoa atualizada = pessoaService.atualizarPessoa(id, pessoa);
+        return ResponseEntity.ok(new PessoaResponse(atualizada));
+    }
 
-        @PostMapping
-        public Pessoa cadastrar(@RequestBody Pessoa pessoa) {
-            return pessoaRepository.save(pessoa);
-        }
-
-
-        @PutMapping("/{id}")
-        public Pessoa atualizar(@PathVariable Long id,
-                                @RequestBody Pessoa pessoa) {
-            pessoa.setId(id);
-            return pessoaRepository.save(pessoa);
-        }
-
-
-        @DeleteMapping("/{id}")
-        public void excluir(@PathVariable Long id) {
-            pessoaRepository.deleteById(id);
-        }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+        pessoaService.excluirPessoa(id);
+        return ResponseEntity.noContent().build();
+    }
 }

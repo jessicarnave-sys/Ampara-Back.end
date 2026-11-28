@@ -2,6 +2,9 @@ package br.com.ampara.Pessoa;
 
 import org.springframework.stereotype.Service;
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 
 @Service
 public class PessoaService {
@@ -18,7 +21,8 @@ public class PessoaService {
 
     public Pessoa buscarPessoaPorId(Long id) {
         return pessoaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pessoa não encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Pessoa não encontrada"));
     }
 
     public Pessoa cadastrarPessoa(Pessoa pessoa) {
@@ -27,6 +31,10 @@ public class PessoaService {
 
     public Pessoa atualizarPessoa(Long id, Pessoa pessoaAtualizada) {
         Pessoa pessoaExistente = buscarPessoaPorId(id);
+
+        pessoaExistente.setNome(pessoaAtualizada.getNome());
+        pessoaExistente.setEmail(pessoaAtualizada.getEmail());
+        pessoaExistente.setTelefone(pessoaAtualizada.getTelefone());
 
         return pessoaRepository.save(pessoaExistente);
     }

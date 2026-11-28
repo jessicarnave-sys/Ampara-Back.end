@@ -6,6 +6,6 @@ public record ProdutoResponse(
         Long price
 ) {
     public ProdutoResponse(Produto produto) {
-        this(produto.getId().longValue(), produto.getName(), produto.getPrice());
+        this(produto.getId(), produto.getName(), produto.getPrice());
     }
 }

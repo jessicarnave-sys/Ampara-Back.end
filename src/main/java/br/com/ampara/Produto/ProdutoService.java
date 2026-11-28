@@ -1,6 +1,9 @@
 package br.com.ampara.Produto;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 
 @Service
@@ -18,13 +21,13 @@ public class ProdutoService {
 
     public Produto buscarProdutoPorId(Long id) {
         return produtoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Produto não encontrado"));
     }
 
     public Produto cadastrarProduto(Produto produto) {
         return produtoRepository.save(produto);
     }
-
 
     public Produto atualizarProduto(Long id, Produto produtoAtualizado) {
         Produto produtoExistente = buscarProdutoPorId(id);
